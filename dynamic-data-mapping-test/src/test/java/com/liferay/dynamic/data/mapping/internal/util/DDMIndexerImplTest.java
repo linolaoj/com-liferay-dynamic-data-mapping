@@ -16,14 +16,10 @@ package com.liferay.dynamic.data.mapping.internal.util;
 
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.model.DDMFormFieldType;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.dynamic.data.mapping.test.util.DDMFormTestUtil;
-import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
 import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -92,25 +88,25 @@ public class DDMIndexerImplTest {
 		Set<Locale> availableLocales = new HashSet<>(
 			Arrays.asList(defaultLocale, translationLocale));
 
-		DDMForm ddmForm = buildDDMForm(availableLocales, defaultLocale);
+		DDMForm ddmForm = createDDMForm(availableLocales, defaultLocale);
 
 		String fieldName = "text1";
 		String indexType = "text";
 
-		DDMFormField ddmFormField = buildDDMFormField(fieldName, indexType);
+		DDMFormField ddmFormField = createFormField(fieldName, indexType);
 
 		ddmForm.addDDMFormField(ddmFormField);
 
 		String fieldValue = "新規作成";
 
-		DDMFormFieldValue ddmFormFieldValue = buildDDMFormFieldValue(
+		DDMFormFieldValue ddmFormFieldValue = createDDMFormFieldValue(
 			fieldName, translationLocale, fieldValue, defaultLocale);
 
 		Document document = createDocument();
 
 		DDMStructure ddmStructure = createStructure(ddmForm);
 
-		DDMFormValues ddmFormValues = buildDDMFormValues(
+		DDMFormValues ddmFormValues = createDDMFormValues(
 			ddmForm, ddmFormFieldValue);
 
 		ddmIndexer.addAttributes(document, ddmStructure, ddmFormValues);
@@ -128,59 +124,46 @@ public class DDMIndexerImplTest {
 			"ddm__text", document, fieldValue);
 	}
 
-	protected DDMForm buildDDMForm(
+	protected DDMForm createDDMForm(
 		Set<Locale> availableLocales, Locale defaultLocale) {
 
-		return DDMFormTestUtil.createDDMForm(availableLocales, defaultLocale);
+		ddmFormBuilder.setAvailableLocales(availableLocales);
+		ddmFormBuilder.setDefaultLocale(defaultLocale);
+
+		return ddmFormBuilder.build();
 	}
 
-	protected DDMFormField buildDDMFormField(
-		String fieldName, String indexType) {
-
-		String name = fieldName;
-		String label = fieldName;
-		String type = DDMFormFieldType.TEXT;
-		String dataType = "string";
-		boolean localizable = false;
-		boolean repeatable = false;
-		boolean required = true;
-
-		DDMFormField ddmFormField = DDMFormTestUtil.createDDMFormField(
-			name, label, type, dataType, localizable, repeatable, required);
-
-		ddmFormField.setIndexType(indexType);
-
-		return ddmFormField;
-	}
-
-	protected DDMFormFieldValue buildDDMFormFieldValue(
+	protected DDMFormFieldValue createDDMFormFieldValue(
 		String name, Locale locale, String value, Locale defaultLocale) {
 
-		LocalizedValue localizedValue = new LocalizedValue(defaultLocale);
+		ddmFormFieldValueBuilder.setDefaultLocale(defaultLocale);
+		ddmFormFieldValueBuilder.setLocale(locale);
+		ddmFormFieldValueBuilder.setName(name);
+		ddmFormFieldValueBuilder.setValue(value);
 
-		localizedValue.addString(locale, value);
-
-		return DDMFormValuesTestUtil.createDDMFormFieldValue(
-			name, localizedValue);
+		return ddmFormFieldValueBuilder.build();
 	}
 
-	protected DDMFormValues buildDDMFormValues(
+	protected DDMFormValues createDDMFormValues(
 		DDMForm ddmForm, DDMFormFieldValue... ddmFormFieldValues) {
 
-		DDMFormValues ddmFormValues = DDMFormValuesTestUtil.createDDMFormValues(
-			ddmForm);
+		ddmFormValuesBuilder.setDdmForm(ddmForm);
+		ddmFormValuesBuilder.setDdmFormFieldValues(ddmFormFieldValues);
 
-		for (DDMFormFieldValue ddmFormFieldValue : ddmFormFieldValues) {
-			ddmFormValues.addDDMFormFieldValue(ddmFormFieldValue);
-		}
-
-		return ddmFormValues;
+		return ddmFormValuesBuilder.build();
 	}
 
 	protected Document createDocument() {
 		return DocumentFixture.newDocument(
 			RandomTestUtil.randomLong(), RandomTestUtil.randomLong(),
 			DDMForm.class.getName());
+	}
+
+	protected DDMFormField createFormField(String fieldName, String indexType) {
+		ddmFormFieldBuilder.setFieldName(fieldName);
+		ddmFormFieldBuilder.setIndexType(indexType);
+
+		return ddmFormFieldBuilder.build();
 	}
 
 	protected DDMIndexer createIndexer() {
@@ -203,6 +186,13 @@ public class DDMIndexerImplTest {
 	}
 
 	protected final DDMFixture ddmFixture = new DDMFixture();
+	protected final DDMFormBuilder ddmFormBuilder = new DDMFormBuilder();
+	protected final DDMFormFieldBuilder ddmFormFieldBuilder =
+		new DDMFormFieldBuilder();
+	protected final DDMFormFieldValueBuilder ddmFormFieldValueBuilder =
+		new DDMFormFieldValueBuilder();
+	protected final DDMFormValuesBuilder ddmFormValuesBuilder =
+		new DDMFormValuesBuilder();
 	protected final DDMIndexer ddmIndexer = createIndexer();
 	protected final DDMStructureBuilder ddmStructureBuilder =
 		new DDMStructureBuilder();
