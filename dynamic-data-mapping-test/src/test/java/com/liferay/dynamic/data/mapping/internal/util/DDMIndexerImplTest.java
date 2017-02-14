@@ -79,6 +79,52 @@ public class DDMIndexerImplTest {
 	}
 
 	@Test
+	public void testOneFormLocaleAndOneDefaultLocalizedValue()
+		throws Exception {
+
+		Locale defaultLocale = LocaleUtil.JAPAN;
+		Locale translationLocale = LocaleUtil.JAPAN;
+
+		Set<Locale> availableLocales = new HashSet<>(
+			Arrays.asList(defaultLocale));
+
+		DDMForm ddmForm = createDDMForm(availableLocales, defaultLocale);
+
+		String fieldName = "text1";
+		String indexType = "text";
+
+		DDMFormField ddmFormField = createFormField(fieldName, indexType);
+
+		ddmForm.addDDMFormField(ddmFormField);
+
+		String fieldValue = "新規作成";
+
+		DDMFormFieldValue ddmFormFieldValue = createDDMFormFieldValue(
+			fieldName, translationLocale, fieldValue, defaultLocale);
+
+		Document document = createDocument();
+
+		DDMStructure ddmStructure = createStructure(ddmForm);
+
+		DDMFormValues ddmFormValues = createDDMFormValues(
+			ddmForm, ddmFormFieldValue);
+
+		ddmIndexer.addAttributes(document, ddmStructure, ddmFormValues);
+
+		Map<String, String> map = _withSortableValues(
+			new HashMap<String, String>() {
+				{
+					put("ddm__text__NNNNN__text1_ja_JP", fieldValue);
+				}
+			});
+
+		FieldValuesAssert.assertFieldValues(
+			_replaceKeys(
+				"NNNNN", String.valueOf(ddmStructure.getStructureId()), map),
+			"ddm__text", document, fieldValue);
+	}
+
+	@Test
 	public void testTwoFormLocalesAndOneNonDefaultLocalizedValue()
 		throws Exception {
 
@@ -122,6 +168,55 @@ public class DDMIndexerImplTest {
 			_replaceKeys(
 				"NNNNN", String.valueOf(ddmStructure.getStructureId()), map),
 			"ddm__text", document, fieldValue);
+	}
+
+	@Test
+	public void testTwoFormLocalesAndTwoLocalizedValue() throws Exception {
+		Locale defaultLocale = LocaleUtil.JAPAN;
+		Locale translationLocale = LocaleUtil.US;
+
+		Set<Locale> availableLocales = new HashSet<>(
+			Arrays.asList(defaultLocale, translationLocale));
+
+		DDMForm ddmForm = createDDMForm(availableLocales, defaultLocale);
+
+		String fieldName = "text1";
+		String indexType = "text";
+
+		DDMFormField ddmFormField = createFormField(fieldName, indexType);
+
+		ddmForm.addDDMFormField(ddmFormField);
+
+		String fieldValueJP = "新規作成";
+		String fieldValueUS = "new";
+
+		DDMFormFieldValue ddmFormFieldValueJP = createDDMFormFieldValue(
+			fieldName, defaultLocale, fieldValueJP, defaultLocale);
+
+		DDMFormFieldValue ddmFormFieldValueUS = createDDMFormFieldValue(
+			fieldName, translationLocale, fieldValueUS, defaultLocale);
+
+		Document document = createDocument();
+
+		DDMStructure ddmStructure = createStructure(ddmForm);
+
+		DDMFormValues ddmFormValues = createDDMFormValues(
+			ddmForm, ddmFormFieldValueJP, ddmFormFieldValueUS);
+
+		ddmIndexer.addAttributes(document, ddmStructure, ddmFormValues);
+
+		Map<String, String> map = _withSortableValues(
+			new HashMap<String, String>() {
+				{
+					put("ddm__text__NNNNN__text1_ja_JP", fieldValueJP);
+					put("ddm__text__NNNNN__text1_en_US", fieldValueUS);
+				}
+			});
+
+		FieldValuesAssert.assertFieldValues(
+			_replaceKeys(
+				"NNNNN", String.valueOf(ddmStructure.getStructureId()), map),
+			"ddm__text", document, fieldValueJP);
 	}
 
 	protected DDMForm createDDMForm(
