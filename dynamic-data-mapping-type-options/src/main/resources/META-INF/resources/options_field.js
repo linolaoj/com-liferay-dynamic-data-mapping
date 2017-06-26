@@ -454,7 +454,11 @@ AUI.add(
 					_canSortNode: function(event) {
 						var instance = this;
 
-						var sortable = instance.get('sortable');
+						var sortable = true;
+
+						if (!!instance._attrs.sortable) {
+							sortable = instance._attrs.sortable.value;
+						}
 
 						if (!sortable) {
 							return false;
@@ -642,6 +646,7 @@ AUI.add(
 						value[editingLanguageId] = optionValues;
 
 						instance.set('value', value);
+
 					},
 
 					_syncOptionUI: function(option) {
