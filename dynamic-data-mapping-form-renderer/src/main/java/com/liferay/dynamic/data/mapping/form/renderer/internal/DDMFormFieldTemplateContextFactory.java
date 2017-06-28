@@ -69,6 +69,10 @@ public class DDMFormFieldTemplateContextFactory {
 			_ddmFormFieldValues, StringPool.BLANK);
 	}
 
+	public void setPageEnabled(boolean pageEnabled) {
+		_pageEnabled = pageEnabled;
+	}
+
 	protected DDMFormFieldRenderingContext
 		createDDDMFormFieldRenderingContext(
 			Map<String, Object> ddmFormFieldTemplateContext) {
@@ -192,6 +196,10 @@ public class DDMFormFieldTemplateContextFactory {
 		for (DDMFormFieldValue ddmFormFieldValue : ddmFormFieldValues) {
 			DDMFormFieldEvaluationResult ddmFormFieldEvaluationResult =
 				_getDDMFormFieldEvaluationResult(ddmFormFieldValue);
+
+			if (!_pageEnabled) {
+				ddmFormFieldEvaluationResult.setRequired(false);
+			}
 
 			Object ddmFormFieldTemplateContext =
 				createDDMFormFieldTemplateContext(
@@ -590,5 +598,6 @@ public class DDMFormFieldTemplateContextFactory {
 	private final List<DDMFormFieldValue> _ddmFormFieldValues;
 	private final DDMFormRenderingContext _ddmFormRenderingContext;
 	private final Locale _locale;
+	private boolean _pageEnabled;
 
 }
