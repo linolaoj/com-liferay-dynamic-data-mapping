@@ -296,6 +296,8 @@ public class DDMFormFieldTemplateContextFactoryTest {
 		ddmFormFieldTemplateContextFactory.setDDMFormFieldTypeServicesTracker(
 			ddmFormFieldTypeServicesTracker);
 
+		ddmFormFieldTemplateContextFactory.setPageEnabled(true);
+
 		return ddmFormFieldTemplateContextFactory;
 	}
 
