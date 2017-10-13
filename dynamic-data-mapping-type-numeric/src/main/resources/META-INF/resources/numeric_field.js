@@ -37,7 +37,7 @@ AUI.add(
 						var instance = this;
 
 						instance.bindInputEvent('keypress', A.bind('_onNumericFieldKeyPress', instance));
-						instance.bindInputEvent('keyup', A.bind('_onNumericFieldKeyUp', instance));
+						instance.bindInputEvent('blur', A.bind('_onNumericFieldBlur', instance));
 
 						instance.evaluate = A.debounce(
 							function() {
@@ -88,7 +88,7 @@ AUI.add(
 
 						var charCode = (typeof event.which == 'number') ? event.which : event.keyCode;
 
-						if ((charCode >= 48 && charCode <= 57) || charCode === 46) {
+						if ((charCode >= 48 && charCode <= 57) || charCode === 46 || charCode === 190) {
 							return true;
 						}
 
@@ -97,7 +97,7 @@ AUI.add(
 						return false;
 					},
 
-					_onNumericFieldKeyUp: function() {
+					_onNumericFieldBlur: function() {
 						var instance = this;
 
 						var value = String(instance.get('value'));
