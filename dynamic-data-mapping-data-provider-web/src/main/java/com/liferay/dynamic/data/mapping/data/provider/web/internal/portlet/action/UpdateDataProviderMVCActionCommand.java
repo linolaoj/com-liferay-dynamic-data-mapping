@@ -84,11 +84,12 @@ public class UpdateDataProviderMVCActionCommand
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			DDMDataProviderInstance.class.getName(), actionRequest);
 
+		Locale locale = themeDisplay.getSiteDefaultLocale();
+
 		ddmDataProviderInstanceService.updateDataProviderInstance(
-			dataProviderInstanceId,
-			getLocalizedMap(themeDisplay.getSiteDefaultLocale(), name),
-			getLocalizedMap(themeDisplay.getSiteDefaultLocale(), description),
-			ddmFormValues, serviceContext);
+			dataProviderInstanceId, getLocalizedMap(locale, name),
+			getLocalizedMap(locale, description), ddmFormValues,
+			serviceContext);
 	}
 
 	protected Optional<DDMFormFieldValue> findStoredDDMFormFieldValue(
